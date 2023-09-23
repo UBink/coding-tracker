@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Coding Tracker</title>
+</head>
+<body>
+    <div id="welcome">
+    <h1>Welcome to Coding Time Tracker</h1>
+    <h2>This page can help you track your time while you are coding</h2>
+    </div>
+    <section>
+      <h1>Coding Tracker</h1>
+      <button id="startButton">Start Coding</button>
+      <button id="stopButton">Stop Coding</button>
+      <p>Current Coding Time: <span id="currentCodingTime">0</span> </p>
+      <p>Total Coding Time: <span id="totalCodingTime">0</span></p>
+    </section>
+    <script>
+        let intervalId;
+        let codingStartTime;
+        let totalCodingTime = 0;
+        let isCodingStopped = true;
+
+        function startCoding() {
+            if (isCodingStopped) {
+                codingStartTime = new Date().getTime();
+                localStorage.setItem('codingStartTime', codingStartTime.toString());
+                intervalId = setInterval(updateCurrentTime, 1000); // Update every second
+                isCodingStopped = false;
+            }
+        }
+
+        function stopCoding() {
+            if (!isCodingStopped) {
+                clearInterval(intervalId);
+                const endTime = new Date().getTime();
+                const elapsedTime = endTime - codingStartTime;
+                totalCodingTime += elapsedTime;
+                localStorage.setItem('totalCodingTime', totalCodingTime.toString());
+                updateTotalTime();
+                updateCurrentTime(); // Reset current time to 0 minutes
+                isCodingStopped = true;
+            }
+        }
+
+        function updateCurrentTime() {
+            const currentTime = (new Date().getTime() - codingStartTime) / 1000 / 60;
+            document.getElementById('currentCodingTime').textContent = currentTime.toFixed(2) + ' minutes';
+        }
+
+        function updateTotalTime() {
+            const totalMinutes = Math.floor(totalCodingTime / 1000 / 60);
+            document.getElementById('totalCodingTime').textContent = totalMinutes + ' minutes';
+        }
+
+        // Attach click event listeners to buttons
+        document.getElementById('startButton').addEventListener('click', startCoding);
+        document.getElementById('stopButton').addEventListener('click', stopCoding);
+
+        // Initialize the total coding time
+        updateTotalTime();
+    </script>
+</body>
+</html>
